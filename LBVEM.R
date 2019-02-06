@@ -1,10 +1,11 @@
+rm(list=ls())
 # Input 
 # x : données
 # g : nbr clusters lignes
 # m : nbr clusters colonnes
 # init : nbr initialisation VEM
 
-x <- iris_sans_species
+x <- subset(iris, select=-Species)
 g <- 5
 m <- 2
 lbvem <- function(x, g, m, init) {
@@ -83,9 +84,11 @@ lbvem <- function(x, g, m, init) {
         for (k in 1:ncol(z)) {
           test <- 0
           for (l in 1:ncol(w)) {
-            test <- test +colSums(w)[l] * (log(sigma[k, l] + ((uw[i, l] - 2*(mu[k, l]) * xw[i, l] + mu[k, l]^2)/sigma[k, l])))
+            test <- test + colSums(w)[l] * (log(sigma[k, l] + ((uw[i, l] - 2*(mu[k, l]) * xw[i, l] + mu[k, l]^2)/sigma[k, l])))
           }
-          z[i, k] <- sum(pi[,k]) * exp(-0.5*test)
+          if (!is.nan(test)) {
+            z[i, k] <- sum(pi[,k]) * exp(-0.5*test)
+          }
         }
       }
       
@@ -141,7 +144,10 @@ lbvem <- function(x, g, m, init) {
         for (k in 1:ncol(z)) {
           test <- test + colSums(z)[k] * (log(sigma[k, l] + ((vz[k, j] - 2*(mu[k, l]) * xz[k, j] + mu[k, l]^2)/sigma[k, l])))
         }
-        w[j, l] <- sum(rho[,l]) * exp(-0.5*test)
+        if (!is.nan(test)) {
+          w[j, l] <- sum(rho[,l]) * exp(-0.5*test)
+        }
+        #w[j, l] <- sum(rho[,l]) * exp(-0.5*test)
       }
     }
     
@@ -168,7 +174,9 @@ lbvem <- function(x, g, m, init) {
       sigma[k, l] <- (sigma[k, l] / (colSums(w)[l])) - (mu[k, l])^2
     }
   }
-  return (list(pi, rho, mu, sigma))
+  pi_max <- as.matrix(apply(pi, 1, which.max))
+  rho_max <- as.matrix(apply(rho, 1, which.max))
+  return (list(pi = pi, pi_max = pi_max, rho = rho, rho_max = rho_max, mu = mu, sigma = sigma))
 }
 
 debug(lbvem)
