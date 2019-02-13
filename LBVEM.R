@@ -1,4 +1,6 @@
 rm(list=ls())
+# Blockclusters
+install.packages("blockcluster")
 library("blockcluster")
 
 data("gaussiandata")
@@ -234,12 +236,8 @@ plot_coclust <- function(res) {
   
   image(t(data))
   title("Original data")
-  #res$columns_clusters
-  #res$lines_clusters
-  # reconstruction dataframe
 
   newdata <- data[order(res$lines_clusters), order(res$columns_clusters)]
-  #newdata <- data[order(res$lines_clusters), ]
   image(t(as.matrix(newdata)))
   
   rowvec=1:g
@@ -254,28 +252,18 @@ plot_coclust <- function(res) {
   reverse<-1:g
   abline(h=cumsum(rowvec[reverse])[1:g-1],v=cumsum(colvec)[1:m-1],col="blue",lwd=2)
   
-  #abline(order(res$columns_clusters))
-  #abline(order(res$lines_clusters))
   title("Co-clustering")
   par(mfrow=c(1, 1))
 }
 
-debug(lbvem)
-undebug(lbvem)
+
+# Fonctions recodées
+
+#debug(lbvem)
+#undebug(lbvem)
 res <- lbvem(x, g, m)
 res <- lbvem(gaussiandata, 3, 3)
-icl(res)
-plot_coclust(res)
 
-# Blockclusters
-#install.packages("blockcluster")
-
-#x <- subset(iris, select=-Species)
-#g <- 5
-#m <- 2
-out<-coclusterContinuous(as.matrix(x), nbcocluster = c(g, m))
-
-summary(out)
 summary(res)
 res$pi
 res$pi_max
@@ -284,4 +272,16 @@ res$rho_max
 res$mu
 res$sigma
 
+icl(res)
+plot_coclust(res)
+
+
+# Blockcluster
+
+#x <- subset(iris, select=-Species)
+#g <- 5
+#m <- 2
+out<-coclusterContinuous(as.matrix(x), nbcocluster = c(g, m))
+
+summary(out)
 plot(out)
