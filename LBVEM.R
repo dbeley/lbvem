@@ -1,4 +1,5 @@
 rm(list=ls())
+library("blockcluster")
 # Input 
 # x : données
 # g : nbr clusters lignes
@@ -55,155 +56,137 @@ lbvem <- function(x, g, m, init) {
   sigma <- matrix(0, nrow = g, ncol = m)
   for (k in 1:g) {
     for (l in 1:m) {
-      for (i in 1:nrow(x)) {
-        for (j in 1:ncol(x)) {
-          sigma[k, l] <- sigma[k, l] + (z[i, k] * w[j, l] * (x[i, j])^2)
-        }
-      }
-      sigma[k, l] <- (sigma[k, l] / (colSums(z)[k] * colSums(w)[l])) - (mu[k, l])^2
+      sigma[k, l] <- sd(as.matrix(x[which(z[, k] ==1), which(w[, l] == 1)]))^2
+      #for (i in 1:nrow(x)) {
+      #  for (j in 1:ncol(x)) {
+      #    sigma[k, l] <- sigma[k, l] + (z[i, k] * w[j, l] * (x[i, j])^2)
+      #  }
+      #}
+      #sigma[k, l] <- (sigma[k, l] / (colSums(z)[k] * colSums(w)[l])) - (mu[k, l])^2
     }
   }
   
   for (a in 1:1) {
-  #xz <- matrix(0, nrow = nrow(x), ncol = g)
-  #vz <- matrix(0, nrow = nrow(x), ncol = g)
-  #for (k in 1:nrow(xz)) {
-  #  for (j in 1:ncol(x)) {
-  #    xz[k, j] <- sum(z[,k] * x[i,])/colSums(z)[k]
-  #    vz[k, j] <- sum(z[,k] * x[i,]^2)/colSums(z)[k]
-  #  }
-  #}
     # lignes
     xw <- matrix(0, nrow = nrow(x), ncol = m)
     uw <- matrix(0, nrow = nrow(x), ncol = m)
     for (l in 1:ncol(xw)) {
       for (i in 1:nrow(x)) {
         xw[i, l] <- sum(w[,l] * x[i,])/colSums(w)[l]
-        uw[i, l] <- sum(w[,l] * x[i,]^2)/colSums(w)[l]
-        #for (j in 1:ncol(x)) {
-        #  xw[i, l] <- xw[i, l] + w[j, l] * x[i, j]
-        #  uw[i, l] <- uw[i, l] + w[j, l] * (x[i, j]^2)
-        #}
-        #xw[i, l] <- xw[i, l]/colSums(w)[l]
-        #uw[i, l] <- uw[i, l]/colSums(w)[l]
+        uw[i, l] <- sum(w[,l] * (x[i,])^2)/colSums(w)[l]
       }
-   }
+    }
     
     for (b in 1:1) {
       # step 1
       # zik <- pi*exp(w*log())
       for (i in 1:nrow(z)) {
         for (k in 1:ncol(z)) {
-          test <- 0
+          somme <- 0
+          #somme <- colSums(w)[l] * sum(log(sigma[k, ]) + ((uw[i, ] - (2*mu[k, ] * xw[i, ]) + mu[k, ]^2)/sigma[k, ]))
           for (l in 1:ncol(w)) {
-            test <- test + colSums(w)[l] * (log(sigma[k, l]) + ((uw[i, l] - (2*(mu[k, l]) * xw[i, l]) + mu[k, l]^2)/sigma[k, l]))
+            #test2 <- (uw[i, l] - (2*(mu[k, l]) * xw[i, l]) + mu[k, l]^2)
+            #print(paste(test2))
+            somme <- somme + colSums(w)[l] * (log(sigma[k, l]) + ((uw[i, l] - (2*mu[k, l] * xw[i, l]) + mu[k, l]^2)/sigma[k, l]))
           }
-          if (!is.nan(test)) {
-            #z[i, k] <- sum(pi[,k]) * exp(-0.5*test)
-            z[i, k] <- pi[k] * exp(-0.5*test)
+          if (!is.nan(somme)) {
+            #z[i, k] <- sum(pi[,k]) * exp(-0.5*somme)
+            z[i, k] <- pi[k] * exp(-0.5*somme)
           }
+          #else {
+          #  z[i, k] <- 0
+          #}
         }
       }
+      
+      # normalisation z
+      z <- z / rowSums(z)
       
       # step 2
       pi <- colSums(z) / nrow(x)
       # mu
+      #mu[k, l] <- mean(as.matrix(x[which(z[, k] == 1), which(w[, l] == 1)]))
       for (k in 1:g) {
         for (l in 1:m) {
+          somme <- 0
           for (i in 1:nrow(x)) {
-            mu[k, l] <- mu[k, l] + (z[i, k] * xw[i, l])
+            somme <- somme + (z[i, k] * xw[i, l])
           }
+          mu[k, l] <- somme / (colSums(z)[k])
         }
-        mu[k, l] <- mu[k, l] / (colSums(z)[k])
       }
       #print(paste(mu))
       
       for (k in 1:g) {
         for (l in 1:m) {
+          somme <- 0
           for (i in 1:nrow(x)) {
-            sigma[k, l] <- sigma[k, l] + (z[i, k] * uw[i, l])
+            somme <- somme + (z[i, k] * uw[i, l])
           }
+          sigma[k, l] <- (somme / (colSums(z)[k])) - (mu[k, l])^2
         }
-        sigma[k, l] <- (sigma[k, l] / (colSums(z)[k])) - (mu[k, l])^2
       }
     }
     
     # sigma
     
-  }
-  
-  # xz
-  # vz
-  xz <- matrix(0, nrow = ncol(x), ncol = g)
-  vz <- matrix(0, nrow = ncol(x), ncol = g)
-  for (k in 1:nrow(xz)) {
-    for (j in 1:ncol(x)) {
-      xz[k, j] <- sum(z[,k] * x[,j])/colSums(z)[k]
-      vz[k, j] <- sum(z[,k] * x[,j]^2)/colSums(z)[k]
-    }
-  }
-  #for (k in 1:ncol(xz)) {
-  #  for (j in 1:nrow(x)) {
-  #    for (j in 1:ncol(x)) {
-  #      xz[k, j] <- xz[k, j] + z[i, k] * x[i, j]
-  #      vz[k, j] <- vz[k, j] + z[i, k] * (x[i, j]^2)
-  #    }
-  #    xz[i, l] <- xz[i, l]/colSums(z)[k]
-  #    vz[i, l] <- vz[i, l]/colSums(z)[k]
-  #  }
-  #}
-  
-  #for (k in 1:ncol(xz)) {
-  #  for (i in 1:nrow(x)) {
-  #    for (j in 1:ncol(x)) {
-  #      xz[k, j] <- xz[k, j] + z[i, k] * x[i, j]
-  #      vz[k, j] <- vz[k, j] + z[i, k] * (x[i, j]^2)
-  #    }
-  #    xz[i, l] <- xz[i, l]/colSums(z)[k]
-  #    vz[i, l] <- vz[i, l]/colSums(z)[k]
-  #  }
-  #}
-  
-  # colonnes
-  for (c in 1:1) {
-    # step 3
-    # wjl <- rho*exp(z*log())
-    for (j in 1:nrow(w)) {
-      for (l in 1:ncol(w)) {
-        test <- 0
-        for (k in 1:ncol(z)) {
-          test <- test + colSums(z)[k] * (log(sigma[k, l]) + ((vz[k, j] - (2*(mu[k, l]) * xz[k, j]) + mu[k, l]^2)/sigma[k, l]))
-        }
-        if (!is.nan(test)) {
-          #w[j, l] <- sum(rho[,l]) * exp(-0.5*test)
-          w[j, l] <- sum(rho[l]) * exp(-0.5*test)
-        }
-        #w[j, l] <- sum(rho[,l]) * exp(-0.5*test)
+    # xz
+    # vz
+    xz <- matrix(0, nrow = g, ncol = ncol(x))
+    vz <- matrix(0, nrow = g, ncol = ncol(x))
+    for (k in 1:nrow(xz)) {
+      for (j in 1:ncol(x)) {
+        xz[k, j] <- sum(z[,k] * x[,j])/colSums(z)[k]
+        vz[k, j] <- sum(z[,k] * (x[,j])^2)/colSums(z)[k]
       }
-      print(paste("w :", w))
     }
     
-    # step 4
-    rho <- colSums(w) / ncol(x)
-    # mu
-    for (k in 1:g) {
-      for (l in 1:m) {
-        for (j in 1:ncol(x)) {
-          mu[k, l] <- mu[k, l] + (w[j, l] * xz[k, j])
+    # colonnes
+    for (c in 1:1) {
+      # step 3
+      # wjl <- rho*exp(z*log())
+      for (j in 1:nrow(w)) {
+        for (l in 1:ncol(w)) {
+          somme <- 0
+          for (k in 1:ncol(z)) {
+            somme <- somme + colSums(z)[k] * (log(sigma[k, l]) + ((vz[k, j] - (2*(mu[k, l]) * xz[k, j]) + mu[k, l]^2)/sigma[k, l]))
+          }
+          if (!is.nan(somme)) {
+            #w[j, l] <- sum(rho[,l]) * exp(-0.5*somme)
+            w[j, l] <- rho[l] * exp(-0.5*somme)
+          }
+          #w[j, l] <- sum(rho[,l]) * exp(-0.5*somme)
+        }
+        #print(paste("w :", w))
+      }
+      
+      # Normalisation w
+      w <- w / rowSums(w)
+      
+      # step 4
+      rho <- colSums(w) / ncol(x)
+      # mu
+      for (k in 1:g) {
+        for (l in 1:m) {
+          somme <- 0
+          for (j in 1:ncol(x)) {
+            somme <- somme + (w[j, l] * xz[k, j])
+          }
+          mu[k, l] <- somme / (colSums(w)[l])
         }
       }
-      mu[k, l] <- mu[k, l] / (colSums(w)[l])
-    }
-    #print(paste(mu))
-    
-    # sigma
-    for (k in 1:g) {
-      for (l in 1:m) {
-        for (j in 1:ncol(x)) {
-          sigma[k, l] <- sigma[k, l] + (w[j, l] * vz[k, j])
+      #print(paste(mu))
+      
+      # sigma
+      for (k in 1:g) {
+        for (l in 1:m) {
+          somme <- 0
+          for (j in 1:ncol(x)) {
+            somme <- somme + (w[j, l] * vz[k, j])
+          }
+          sigma[k, l] <- (somme / (colSums(w)[l])) - (mu[k, l])^2
         }
       }
-      sigma[k, l] <- (sigma[k, l] / (colSums(w)[l])) - (mu[k, l])^2
     }
   }
   pi_max <- as.matrix(apply(z, 1, which.max))
@@ -217,7 +200,6 @@ res <- lbvem(x, g, m)
 
 # Blockclusters
 #install.packages("blockcluster")
-library("blockcluster")
 
 x <- subset(iris, select=-Species)
 g <- 5
