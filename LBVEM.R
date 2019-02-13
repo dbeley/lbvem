@@ -12,45 +12,16 @@ x <- subset(iris, select=-Species)
 g <- 3
 m <- 2
 
-icl_old <- function(res) {
-  data <- res$data
-  z <- res$z
-  w <- res$w
-  mu <- res$mu
-  sigma <- res$sigma
-  
-  n <- nrow(data)
-  d <- ncol(data)
-  g <- nrow(mu)
-  m <- ncol(mu)
-  sigma <- sum(sigma)
-  
-  terme11 <- -(n*d)/2 * log(sigma)
-  somme <- 0
-  for (i in 1:n) {
-    for (j in 1:d) {
-      for (k in 1:g) {
-        for (l in 1:m) {
-          somme <- somme + z[i, k] * w[j, l] * (x[i, j] - mu[k, l])^2
-        }
-      }
-    }
-  }
-  terme12 <- -(1/(2*sigma) * somme)
-  terme13 <- -(n*log(g))
-  terme14 <- -(d*log(m))
-  terme1 <- terme12 + terme12 + terme13 + terme14
-  terme2 <- -((g-1)/2 * log(n))
-  terme3 <- -((m-1)/2 * log(d))
-  terme4 <- -((g*l)/2 * 2 * log(n*d))
-  return(terme1+terme2+terme3+terme4)
-}
+x <- gaussiandata
+g <- 3
+m <- 3
 
 icl <- function(res) {
   data <- res$data
   z <- res$z
-  pi <- res$pi
   w <- res$w
+  pi <- res$pi
+  rho <- res$rho
   mu <- res$mu
   sigma <- res$sigma
   
@@ -116,38 +87,22 @@ lbvem <- function(x, g, m, init) {
   }
   
   # calcul des proportions
-  #pi <- z / nrow(x)
   pi <- colSums(z) / nrow(x)
   
-  #rho <- w / ncol(x)
   rho <- colSums(w) / ncol(x)
   
   # calcul moyenne / écart-type
-  # x[which(z[,1] == 1),][1,]
   mu <- matrix(0, nrow = g, ncol = m)
   for (k in 1:g) {
     for (l in 1:m) {
       mu[k, l] <- mean(as.matrix(x[which(z[, k] == 1), which(w[, l] == 1)]))
-      #for (i in 1:nrow(x)) {
-      #  for (j in 1:ncol(x)) {
-      #    mu[k, l] <- mu[k, l] + (z[i, k] * w[j, l] * x[i, j])
-      #  }
-      #}
-      #mu[k, l] <- mu[k, l] / (colSums(z)[k] * colSums(w)[l])
     }
   }
-  #print(paste(mu))
   
   sigma <- matrix(0, nrow = g, ncol = m)
   for (k in 1:g) {
     for (l in 1:m) {
       sigma[k, l] <- sd(as.matrix(x[which(z[, k] ==1), which(w[, l] == 1)]))^2
-      #for (i in 1:nrow(x)) {
-      #  for (j in 1:ncol(x)) {
-      #    sigma[k, l] <- sigma[k, l] + (z[i, k] * w[j, l] * (x[i, j])^2)
-      #  }
-      #}
-      #sigma[k, l] <- (sigma[k, l] / (colSums(z)[k] * colSums(w)[l])) - (mu[k, l])^2
     }
   }
   
@@ -166,18 +121,14 @@ lbvem <- function(x, g, m, init) {
       print(paste("boucle repeat 1"))
       mu_old <- mu
       
-    #for (b in 1:3) {
-      # step 1
       for (i in 1:nrow(z)) {
         for (k in 1:ncol(z)) {
           somme <- 0
-          #somme <- colSums(w)[l] * sum(log(sigma[k, ]) + ((uw[i, ] - (2*mu[k, ] * xw[i, ]) + mu[k, ]^2)/sigma[k, ]))
           for (l in 1:ncol(w)) {
             somme <- somme + colSums(w)[l] * (log(sigma[k, l]) + ((uw[i, l] - (2*mu[k, l] * xw[i, l]) + mu[k, l]^2)/sigma[k, l]))
           }
-          #if (!is.nan(somme)) {
-            z[i, k] <- pi[k] * exp(-(1/200)*somme)
-          #}
+          #z[i, k] <- pi[k] * exp(-(1/200)*somme)
+          z[i, k] <- pi[k] * exp(-(1/2)*somme)
         }
       }
       
@@ -186,8 +137,8 @@ lbvem <- function(x, g, m, init) {
       
       # step 2
       pi <- colSums(z) / nrow(x)
-      # mu
-      #mu[k, l] <- mean(as.matrix(x[which(z[, k] == 1), which(w[, l] == 1)]))
+      
+      # màj de mu
       for (k in 1:g) {
         for (l in 1:m) {
           somme <- 0
@@ -197,8 +148,8 @@ lbvem <- function(x, g, m, init) {
           mu[k, l] <- somme / (colSums(z)[k])
         }
       }
-      #print(paste(mu))
       
+      # màj de sigma
       for (k in 1:g) {
         for (l in 1:m) {
           somme <- 0
@@ -213,10 +164,6 @@ lbvem <- function(x, g, m, init) {
       }
     }
     
-    # sigma
-    
-    # xz
-    # vz
     xz <- matrix(0, nrow = g, ncol = ncol(x))
     vz <- matrix(0, nrow = g, ncol = ncol(x))
     for (k in 1:nrow(xz)) {
@@ -227,25 +174,19 @@ lbvem <- function(x, g, m, init) {
     }
     
     # colonnes
-    #for (c in 1:3) {
     repeat{
       print(paste("boucle repeat 2"))
       mu_old <- mu
-      # step 3
-      # wjl <- rho*exp(z*log())
+      
       for (j in 1:nrow(w)) {
         for (l in 1:ncol(w)) {
           somme <- 0
           for (k in 1:ncol(z)) {
             somme <- somme + colSums(z)[k] * (log(sigma[k, l]) + ((vz[k, j] - (2*(mu[k, l]) * xz[k, j]) + mu[k, l]^2)/sigma[k, l]))
           }
-          #if (!is.nan(somme)) {
-            #w[j, l] <- sum(rho[,l]) * exp(-0.5*somme)
-            w[j, l] <- rho[l] * exp(-(1/200)*somme)
-          #}
-          #w[j, l] <- sum(rho[,l]) * exp(-0.5*somme)
+          #w[j, l] <- rho[l] * exp(-(1/200)*somme)
+          w[j, l] <- rho[l] * exp(-(1/2)*somme)
         }
-        #print(paste("w :", w))
       }
       
       # Normalisation w
@@ -253,7 +194,7 @@ lbvem <- function(x, g, m, init) {
       
       # step 4
       rho <- colSums(w) / ncol(x)
-      # mu
+      # màj de mu
       for (k in 1:g) {
         for (l in 1:m) {
           somme <- 0
@@ -263,9 +204,8 @@ lbvem <- function(x, g, m, init) {
           mu[k, l] <- somme / (colSums(w)[l])
         }
       }
-      #print(paste(mu))
       
-      # sigma
+      # màj de sigma
       for (k in 1:g) {
         for (l in 1:m) {
           somme <- 0
