@@ -121,14 +121,15 @@ lbvem <- function(x, g, m, init) {
       print(paste("boucle repeat 1"))
       mu_old <- mu
       
+      somme <- 0
       for (i in 1:nrow(z)) {
         for (k in 1:ncol(z)) {
-          somme <- 0
           for (l in 1:ncol(w)) {
-            somme <- somme + colSums(w)[l] * (log(sigma[k, l]) + ((uw[i, l] - (2*mu[k, l] * xw[i, l]) + mu[k, l]^2)/sigma[k, l]))
+            somme <- somme + 1/100 * colSums(w)[l] * (log(sigma[k, l]) + ((uw[i, l] - (2*mu[k, l] * xw[i, l]) + mu[k, l]^2)/sigma[k, l]))
           }
           #z[i, k] <- pi[k] * exp(-(1/200)*somme)
           z[i, k] <- pi[k] * exp(-(1/2)*somme)
+          somme <- 0
         }
       }
       
@@ -182,7 +183,7 @@ lbvem <- function(x, g, m, init) {
         for (l in 1:ncol(w)) {
           somme <- 0
           for (k in 1:ncol(z)) {
-            somme <- somme + colSums(z)[k] * (log(sigma[k, l]) + ((vz[k, j] - (2*(mu[k, l]) * xz[k, j]) + mu[k, l]^2)/sigma[k, l]))
+            somme <- somme + 1/100 * colSums(z)[k] * (log(sigma[k, l]) + ((vz[k, j] - (2*(mu[k, l]) * xz[k, j]) + mu[k, l]^2)/sigma[k, l]))
           }
           #w[j, l] <- rho[l] * exp(-(1/200)*somme)
           w[j, l] <- rho[l] * exp(-(1/2)*somme)
@@ -237,8 +238,8 @@ plot_coclust <- function(res) {
   #res$lines_clusters
   # reconstruction dataframe
 
-  newdata <- data[, order(res$columns_clusters)]
-  newdata <- data[order(res$lines_clusters), ]
+  newdata <- data[order(res$lines_clusters), order(res$columns_clusters)]
+  #newdata <- data[order(res$lines_clusters), ]
   image(t(as.matrix(newdata)))
   
   rowvec=1:g
@@ -249,8 +250,9 @@ plot_coclust <- function(res) {
   for (i in 1:m) {
     colvec[i]=sum(res$columns_clusters==i)/ncol(data)
   }
-  reverse<-g:1
-  abline(h=cumsum(rowvec[reverse])[1:g],v=cumsum(colvec)[1:m-1],col="blue",lwd=2)
+  #reverse<-g:1
+  reverse<-1:g
+  abline(h=cumsum(rowvec[reverse])[1:g-1],v=cumsum(colvec)[1:m-1],col="blue",lwd=2)
   
   #abline(order(res$columns_clusters))
   #abline(order(res$lines_clusters))
