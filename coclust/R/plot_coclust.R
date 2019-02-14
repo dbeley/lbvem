@@ -7,8 +7,13 @@
 #' @export
 #'
 #' @examples
+#' library(coclust)
+#' library(blockcluster)
+#' data("gaussiandata")
+#' res <- lbvem(gaussiandata, nbcoclust = c(3, 3), init = 50)
+#' plot_coclust(res)
 plot_coclust <- function(res) {
-  par(mfrow=c(1, 2), cex.main = 0.8, cex.axis = 0.8)
+  par(mfrow=c(1, 2), cex.main = 1, cex.axis = 0.8)
   data <- res$data
   g <- res$nbcoclust[1]
   m <- res$nbcoclust[2]

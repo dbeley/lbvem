@@ -17,5 +17,6 @@ VignetteBuilder: knitr
 Imports: 
     stats,
     graphics,
-    blockcluster
+    blockcluster,
+    printr
 RoxygenNote: 6.1.1

@@ -12,6 +12,11 @@
 #' @export
 #'
 #' @examples
+#' library(coclust)
+#' library(blockcluster)
+#' data("gaussiandata")
+#' res <- lbvem(gaussiandata, nbcoclust = c(3, 3), init = 50)
+#' icl(res$data, res$z, res$w, res$pi, res$rho, res$mu, res$sigma)
 icl <- function(data, z, w, pi, rho, mu, sigma) {
 
   n <- nrow(z)

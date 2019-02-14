@@ -9,6 +9,10 @@
 #' @export
 #'
 #' @examples
+#' library(coclust)
+#' library(blockcluster)
+#' data("gaussiandata")
+#' lbvem(gaussiandata, c(3, 3), init=50)
 lbvem <- function(data, nbcoclust, init=10) {
   if(length(nbcoclust) != 2) {
     stop("nbcoclust must be a vector containing 2 values")

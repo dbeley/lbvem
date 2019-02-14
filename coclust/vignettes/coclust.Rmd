@@ -16,17 +16,52 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Preparation
+Dans ce rapport nous présentons notre paquet R **coclust**, permettant d'effectuer un co-clustering gaussien à modèle de blocs latents.
+
+## Préparation de l'environnement
 
 ```{r}
 library(coclust)
 library(blockcluster)
+library(printr)
 data("gaussiandata")
 ```
 
-# coclust Package
+**coclust** est notre paquet, implémentant un co-clustering gaussien à blocs latent.
+
+**blockcluster** est le paquet de co-clustering qui servira de comparaison.
+
+**printr** est un paquet permettant l'impression des pages d'aide dans un rapport rmarkdown.
+
+# Paquet coclust
+
+Notre paquet contient trois fonctions :
+  * lbvem
+  * icl
+  * plot_coclust
+
+## Fonction lbvem
+
+```{r, echo=FALSE, results='asis'}
+help(lbvem)
+```
+
+## Fonction icl
+
+```{r, echo=FALSE, results='asis'}
+help(icl)
+```
+
+## Fonction plot_coclust
+
+```{r, echo=FALSE, results='asis'}
+help(plot_coclust)
+```
 
 ## Co-clustering
+
+Nous effectuons un co-clustering avec la fonction lbvem sur les données gaussiandata du package blockcluster.
+
 ```{r}
 res <- lbvem(gaussiandata, nbcoclust = c(3, 3), init = 50)
 ```
@@ -34,8 +69,8 @@ res <- lbvem(gaussiandata, nbcoclust = c(3, 3), init = 50)
 Notre fonction lbvem effectue un co-clustering gaussien à modèle latent par blocs.
 
 Comme critère de convergence nous avons utilisé deux méthodes :
-  - pour sortir de l'algorithme EM nous vérifions que la matrice des moyennes ne se modifie plus (écart entre l'ancienne matrice et la nouvelle < 0.1)
-  - nous répéterons jusqu'à ce que le critère ICL ne bouge plus (écart entre l'ancien et le nouveau < 1) ou ne décroît plus
+  * pour sortir de l'algorithme EM nous vérifions que la matrice des moyennes ne se modifie plus (écart entre l'ancienne matrice et la nouvelle < 0.1)
+  * nous répéterons jusqu'à ce que le critère ICL ne bouge plus (écart entre l'ancien et le nouveau < 1) ou ne décroît plus
 
 Nous observons sur certains cas le problème où certains clusters se vident.
 
@@ -45,11 +80,13 @@ res$icl
 ```
 
 
-## Plot
+## Représentation graphique
 
-```{r fig.height = 6, fig.width = 4, fig.align = "center"}
+```{r fig.height = 6, fig.width = 8, fig.align = "center"}
 plot_coclust(res)
 ```
+
+À gauche se trouve les données originales, à droite les données avec le partitionnement trouvé par notre fonction de co-clustering.
 
 
 # Blockcluster package
@@ -65,7 +102,32 @@ summary(out)
 
 On retrouve une valeur de l'ICL proche de la valeur trouvée par notre fonction.
 
-## Plot
-```{r fig.height = 6, fig.width = 4, fig.align = "center"}
+## Représentation graphique
+```{r fig.height = 6, fig.width = 8, fig.align = "center"}
 plot(out)
 ```
+
+# Test sur iris
+
+## Préparation des données
+```{r}
+iris2 <- subset(iris, select=-Species)
+```
+
+
+## Co-clustering
+```{r}
+res_iris <- lbvem(iris2, c(3, 2), 50)
+```
+
+
+## ICL
+```{r}
+res_iris$icl
+```
+
+## Représentation graphique
+```{r}
+plot_coclust(res_iris)
+```
+

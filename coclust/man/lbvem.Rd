@@ -19,3 +19,9 @@ a coclust result object
 \description{
 Co-clustering main function using gaussian LBVEM
 }
+\examples{
+library(coclust)
+library(blockcluster)
+data("gaussiandata")
+lbvem(gaussiandata, c(3, 3), init=50)
+}

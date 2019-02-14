@@ -12,3 +12,10 @@ plot_coclust(res)
 \description{
 plot the output of a coclust result object
 }
+\examples{
+library(coclust)
+library(blockcluster)
+data("gaussiandata")
+res <- lbvem(gaussiandata, nbcoclust = c(3, 3), init = 50)
+plot_coclust(res)
+}
