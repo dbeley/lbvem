@@ -1,0 +1,4 @@
+icl                     ICL criteria
+lbvem                   Co-clustering main function using gaussian
+                        LBVEM
+plot_coclust            plot the output of a coclust result object

@@ -1,0 +1,19 @@
+Package: coclust
+Type: Package
+Title: Co-clustering on continuous data
+Version: 0.1.0
+Author: David BELEY, Boubacar SOW
+Maintainer: <david.beley@univ-lyon2.fr>
+Description: Co-clustering on continuous data.
+    This package allows to construct a co-clustering based on a gaussian latent
+    block model.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+Imports: stats, graphics, blockcluster, printr
+RoxygenNote: 6.1.1
+NeedsCompilation: no
+Packaged: 2019-02-14 15:11:06 UTC; david
+Built: R 3.5.2; ; 2019-02-14 15:11:28 UTC; unix
