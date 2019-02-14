@@ -119,7 +119,7 @@ lbvem <- function(data, nbcoclust, init=10) {
         }
       }
       # on quitte la boucle lorsque l'écart entre mu et mu_old < 0.1
-      if(sum(abs(mu-mu_old)) < 0.1) {
+      if(sum(abs(mu-mu_old)) < 10) {
         break
       }
     }
@@ -174,7 +174,7 @@ lbvem <- function(data, nbcoclust, init=10) {
         }
       }
       # on quitte la boucle lorsque l'écart entre mu et mu_old < 0.1
-      if(sum(abs(mu-mu_old)) < 0.1) {
+      if(sum(abs(mu-mu_old)) < 10) {
         break
       }
     }

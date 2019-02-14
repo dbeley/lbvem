@@ -63,13 +63,14 @@ help(plot_coclust)
 Nous effectuons un co-clustering avec la fonction lbvem sur les données gaussiandata du package blockcluster.
 
 ```{r}
-res <- lbvem(gaussiandata, nbcoclust = c(3, 2), init = 50)
+res <- lbvem(gaussiandata, nbcoclust = c(4, 3), init = 10)
 ```
 
 Notre fonction lbvem effectue un co-clustering gaussien à modèle latent par blocs. Pour trouver les paramètres de la log-likelihood, nous avons implémenté l'algorithme VEM (Variational Expected Maximisation). Nous avons également implémenté le critère de convergence ICL (Integrated Completed Likelihood), il permet de choisir le modèle pertinent, et le nombre de composantes du modèle de mélange gaussien. 
 
 Pour le critère de convergence  de lbvem nous avons utilisé deux méthodes :
-  * pour sortir de l'algorithme VEM nous vérifions que les matrices des Paramètres estimés (moyennes et ecart-types) ne se modifie plus (écart entre l'ancienne matrice et la nouvelle < 0.1)
+
+  * pour sortir de l'algorithme VEM nous vérifions que les matrices des Paramètres estimés (uniquement la moyenne dans notre cas) ne se modifie plus vraiment (écart entre l'ancienne matrice et la nouvelle < 10)
   * nous répéterons jusqu'à ce que le critère ICL ne bouge plus (écart entre l'ancien et le nouveau < 1) ou ne décroît plus
 
 L'initialisation de lbvem s'est faite avec kmeans clustering par lignes et colonnes. 
@@ -94,7 +95,7 @@ plot_coclust(res)
 # Blockcluster package
 ## Co-clustering
 ```{r}
-out <- coclusterContinuous(as.matrix(gaussiandata), nbcocluster = c(3, 2))
+out <- coclusterContinuous(as.matrix(gaussiandata), nbcocluster = c(4, 3))
 ```
 
 ## ICL
@@ -119,8 +120,7 @@ iris2 <- subset(iris, select=-Species)
 
 ## Co-clustering
 ```{r}
-res_iris <- lbvem(iris2, c(3, 2), 50)
-plot_coclust(res_iris)
+res_iris <- lbvem(iris2, c(4, 2), 50)
 ```
 
 
