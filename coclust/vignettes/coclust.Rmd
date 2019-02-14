@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Dans ce rapport nous présentons notre paquet R **coclust**, permettant d'effectuer un co-clustering gaussien à modèle de blocs latents.
+Dans ce rapport nous présentons notre paquet R **coclust**, permettant d'effectuer un co-clustering gaussien à modèle de blocs latents. 
 
 ## Préparation de l'environnement
 
@@ -39,7 +39,7 @@ Notre paquet contient trois fonctions :
   * lbvem
   * icl
   * plot_coclust
-
+Dans les lignes qui suivent, nous décrivons l'utilisation de chacune de ces trois fonctions. 
 ## Fonction lbvem
 
 ```{r, echo=FALSE, results='asis'}
