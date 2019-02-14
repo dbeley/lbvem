@@ -1,14 +1,8 @@
-#' ICL criteria
+#' Title
 #'
-#' @param data data object from lbvem function
-#' @param z z object from lbvem function
-#' @param w w object from lbvem function
-#' @param pi pi object from lbvem function
-#' @param rho rho object from lbvem function
-#' @param mu mu object from lbvem function
-#' @param sigma sigma object from lbvem function
+#' @param res coclust result object
 #'
-#' @return ICL value
+#' @return
 #' @export
 #'
 #' @examples

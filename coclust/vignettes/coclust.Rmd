@@ -1,6 +1,6 @@
 ---
 title: "Co-clustering example"
-author: "David Beley"
+author: "David Beley, Boubacar Sow"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -31,6 +31,13 @@ data("gaussiandata")
 res <- lbvem(gaussiandata, nbcoclust = c(3, 3), init = 50)
 ```
 
+Notre fonction lbvem effectue un co-clustering gaussien à modèle latent par blocs.
+
+Comme critère de convergence nous avons utilisé deux méthodes :
+  - pour sortir de l'algorithme EM nous vérifions que la matrice des moyennes ne se modifie plus (écart entre l'ancienne matrice et la nouvelle < 0.1)
+  - nous répéterons jusqu'à ce que le critère ICL ne bouge plus (écart entre l'ancien et le nouveau < 1) ou ne décroît plus
+
+Nous observons sur certains cas le problème où certains clusters se vident.
 
 ## ICL
 ```{r}
@@ -39,7 +46,8 @@ res$icl
 
 
 ## Plot
-```{r}
+
+```{r fig.height = 6, fig.width = 4, fig.align = "center"}
 plot_coclust(res)
 ```
 
@@ -55,7 +63,9 @@ out <- coclusterContinuous(as.matrix(gaussiandata), nbcocluster = c(3, 3))
 summary(out)
 ```
 
+On retrouve une valeur de l'ICL proche de la valeur trouvée par notre fonction.
+
 ## Plot
-```{r}
-#plot(out)
+```{r fig.height = 6, fig.width = 4, fig.align = "center"}
+plot(out)
 ```
