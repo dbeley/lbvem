@@ -72,7 +72,7 @@ Pour le critère de convergence  de lbvem nous avons utilisé deux méthodes :
   * pour sortir de l'algorithme VEM nous vérifions que les matrices des Paramètres estimés (moyennes et ecart-types) ne se modifie plus (écart entre l'ancienne matrice et la nouvelle < 0.1)
   * nous répéterons jusqu'à ce que le critère ICL ne bouge plus (écart entre l'ancien et le nouveau < 1) ou ne décroît plus
 
-L'initialisation de lbvem s'est faite avec kmeans clustering par lignes et colonnes. 
+L'initialisation de lbvem s'est faite avec kmeans clustering par lignes et colonnes. Le nombre de clusters de départ a été choisi de manière arbitraire. 
 
 Pour les jeux de données que nous avons testés, nous observons que dans certains cas, nous n'obtenons pas le même nombre clusters  initiales et finales, les clusters se vident.
 
@@ -88,11 +88,12 @@ res$icl
 plot_coclust(res)
 ```
 
-À gauche se trouve les données originales, à droite les données avec le partitionnement trouvé par notre fonction de co-clustering.
+Sur le graphique ci dessus, à gauche sont représentées les données originales, à droite on affiche les données avec le partitionnement trouvé par notre algorithme (lbvem) de co-clustering.
 
 
 # Blockcluster package
 ## Co-clustering
+Ici on fait un co-clustering de 3 groupes en lignes et 2 groupes en colonnes en utilisant le parkage blockbluster, 
 ```{r}
 out <- coclusterContinuous(as.matrix(gaussiandata), nbcocluster = c(3, 2))
 ```
@@ -102,14 +103,14 @@ out <- coclusterContinuous(as.matrix(gaussiandata), nbcocluster = c(3, 2))
 summary(out)
 ```
 
-On retrouve une valeur de l'ICL proche de la valeur trouvée par notre fonction.
+Dans les résultats ci-dessus, on retrouve une valeur de l'ICL proche de la valeur trouvée par notre fonction.
 
 ## Représentation graphique
 ```{r fig.height = 6, fig.width = 8, fig.align = "center"}
 plot(out)
 ```
 
-# Test sur iris
+# Test sur les données iris
 
 ## Préparation des données
 ```{r}
