@@ -28,13 +28,13 @@ data("gaussiandata")
 
 ## Co-clustering
 ```{r}
-res <- lbvem(gaussiandata, nbcoclust = c(3, 3))
+res <- lbvem(gaussiandata, nbcoclust = c(3, 3), init = 50)
 ```
 
 
 ## ICL
 ```{r}
-icl(res)
+res$icl
 ```
 
 

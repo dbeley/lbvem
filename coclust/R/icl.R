@@ -6,33 +6,24 @@
 #' @export
 #'
 #' @examples
-icl <- function(res) {
-  data <- res$data
-  z <- res$z
-  w <- res$w
-  pi <- res$pi
-  rho <- res$rho
-  mu <- res$mu
-  sigma <- res$sigma
+icl <- function(data, z, w, pi, rho, mu, sigma) {
 
   n <- nrow(z)
   m <- ncol(z)
   d <- nrow(w)
   g <- ncol(w)
 
-  somme1 <- 0
-  for (i in 1:n) {
-    for (k in 1:m) {
-      somme1 <- somme1 + (z[i, k] * log(pi[k]))
-    }
-  }
+  somme1 <- sum(z*log(pi))
+  #somme1 <- 0
+  #for (k in 1:m) {
+  #    somme1 <- somme1 + sum(z[, k]) * log(pi[k])
+  #}
 
-  somme2 <- 0
-  for (j in 1:d) {
-    for (l in 1:g) {
-      somme2 <- somme2 + (w[j, l] * log(rho[l]))
-    }
-  }
+  somme2 <- sum(w*log(rho))
+  #somme2 <- 0
+  #for (l in 1:g) {
+  #  somme2 <- somme2 + (sum(w[, l]) * log(rho[l]))
+  #}
 
   somme3 <- 0
   for (k in 1:m) {

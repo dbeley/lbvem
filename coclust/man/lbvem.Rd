@@ -2,20 +2,20 @@
 % Please edit documentation in R/lbvem.R
 \name{lbvem}
 \alias{lbvem}
-\title{Title}
+\title{Co-clustering main function using gaussian LBVEM}
 \usage{
-lbvem(data, nbcoclust, init)
+lbvem(data, nbcoclust, init = 10)
 }
 \arguments{
-\item{data}{continuous data}
+\item{data}{continuous data (matrix or dataframe)}
 
-\item{nbcoclust}{vector to set the number of clusters}
+\item{nbcoclust}{2d vector specifying the number of clusters (row and column respectively)}
 
-\item{init}{init state}
+\item{init}{number of iterations for the initialization}
 }
 \value{
 a coclust result object
 }
 \description{
-Title
+Co-clustering main function using gaussian LBVEM
 }
