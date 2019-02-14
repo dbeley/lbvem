@@ -31,13 +31,15 @@ data("gaussiandata")
 res <- lbvem(gaussiandata, nbcoclust = c(3, 3), init = 50)
 ```
 
-Notre fonction lbvem effectue un co-clustering gaussien à modèle latent par blocs.
+Notre fonction lbvem effectue un co-clustering gaussien à modèle latent par blocs. Pour trouver les paramètres de la log-likelihood, nous avons implémenté l'algorithme VEM (Variational Expected Maximisation). Nous avons également implémenté le critère de convergence ICL (Integrated Completed Likelihood), il permet de choisir le modèle pertinent, et le nombre de composantes du modèle de mélange gaussien. 
 
-Comme critère de convergence nous avons utilisé deux méthodes :
-  - pour sortir de l'algorithme EM nous vérifions que la matrice des moyennes ne se modifie plus (écart entre l'ancienne matrice et la nouvelle < 0.1)
+Pour le critère de convergence  de lbvem nous avons utilisé deux méthodes :
+  - pour sortir de l'algorithme VEM nous vérifions que les matrices des Paramètres estimés (moyennes et ecart-types) ne se modifie plus (écart entre l'ancienne matrice et la nouvelle < 0.1)
   - nous répéterons jusqu'à ce que le critère ICL ne bouge plus (écart entre l'ancien et le nouveau < 1) ou ne décroît plus
 
-Nous observons sur certains cas le problème où certains clusters se vident.
+L'initialisation de lbvem s'est faite avec kmeans clustering par lignes et colonnes. 
+
+Pour les jeux de données que nous avons testés, nous observons que dans certains cas, nous n'obtenons pas le même nombre clusters  initiales et finales, les clusters se vident.
 
 ## ICL
 ```{r}
