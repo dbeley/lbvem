@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Co-clustering example"
 author: "David Beley, Boubacar Sow"
@@ -133,4 +134,3 @@ res_iris$icl
 ```{r fig.height = 6, fig.width = 8, fig.align = "center"}
 plot_coclust(res_iris)
 ```
-
